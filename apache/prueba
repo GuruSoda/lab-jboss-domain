@@ -1,0 +1,8 @@
+FROM ubuntu:20.04
+
+ARG CACHE_APT
+
+RUN if [ "$CACHE_APT" != "" ]; then sed -i "s/archive.ubuntu.com\|ar.archive.ubuntu.com\|archive.canonical.com\|security.ubuntu.com/$CACHE_APT/g" /etc/apt/sources.list; else echo "sin variable CACHE_APT"; fi
+
+RUN apt update
+

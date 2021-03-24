@@ -1,0 +1,156 @@
+# ejecutar de la siguiente manera:
+# APACHE=8082 MASTER=9992 docker-compose -p test01 up -d
+# o
+# docker-compose -f docker-compose.yml -p fix1 up -d
+#
+version: "3.1"
+services:
+
+  apache:
+    image: www.planetaguru.com.ar/apache-credi
+    ports:
+      - "80:80"
+      - "7777:7777"
+    hostname: apache
+    restart: unless-stopped
+    networks:
+      - jbossnet
+    volumes:
+      - jboss-data:/opt/data
+    depends_on:
+      - fluentd 
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async-connect: "true"
+        tag: httpd.access
+
+  fluentd:
+    image:  fluent/fluentd
+    hostname: fluentd
+    volumes:
+      - ./fluentd:/fluentd/etc
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    networks:
+      - jbossnet
+
+  master:
+    image: www.planetaguru.com.ar/jboss-eap-7.2.0-credi
+    command: master
+    hostname: master
+    ports:
+      - "9990:9990"
+    networks:
+      - jbossnet
+    volumes:
+      - jboss-data:/opt/data
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async-connect: "true"
+        tag: jboss
+
+  slave:
+    image: www.planetaguru.com.ar/jboss-eap-7.2.0-credi
+    command: slave
+    #    hostname: slave01
+    scale: 0
+    depends_on:
+      - master
+      - apache
+    networks:
+      - jbossnet
+    volumes:
+      - jboss-data:/opt/data
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async-connect: "true"
+        tag: jboss
+
+  slave01:
+    image: www.planetaguru.com.ar/jboss-eap-7.2.0-credi
+    command: slave
+    hostname: slave01
+    scale: 1
+    depends_on:
+      - master
+      - apache
+    networks:
+      - jbossnet
+    volumes:
+      - jboss-data:/opt/data
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async-connect: "true"
+        tag: jboss
+
+  slave02:
+    image: www.planetaguru.com.ar/jboss-eap-7.2.0-credi
+    command: slave
+    hostname: slave02
+    scale: 1 
+    depends_on:
+      - master
+      - apache
+    networks:
+      - jbossnet
+    volumes:
+      - jboss-data:/opt/data
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async-connect: "true"
+        tag: jboss 
+
+  slave03:
+    image: www.planetaguru.com.ar/jboss-eap-7.2.0-credi
+    command: slave
+    hostname: slave03
+    scale: 1
+    depends_on:
+      - master
+      - apache
+    networks:
+      - jbossnet
+    volumes:
+      - jboss-data:/opt/data
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async-connect: "true"
+        tag: jboss 
+
+  init:
+    image: www.planetaguru.com.ar/jboss-eap-7.2.0-credi
+    command: init
+    scale: 0
+    depends_on:
+      - master
+      - apache
+    networks:
+      - jbossnet
+    volumes:
+      - /home/ubuntu/domain-mode/repositorio:/opt/repositorio
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async-connect: "true"
+        tag: batch 
+
+networks:
+  jbossnet:
+
+volumes:
+  jboss-data:
+

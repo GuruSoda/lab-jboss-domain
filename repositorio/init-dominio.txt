@@ -1,0 +1,24 @@
+/server-group=Apps-01:add(profile=full-ha,socket-binding-group=full-ha-sockets)
+/server-group=Apps-01/jvm=jvm-apps-01/:add(max-heap-size=512m, max-permgen-size=256m,heap-size=64m)
+/host=slave01/server-config=Apps01-01:add(auto-start=true,group=Apps-01, socket-binding-port-offset=1)
+/host=slave03/server-config=Apps01-03:add(auto-start=true,group=Apps-01, socket-binding-port-offset=1)
+/server-group=Apps-01:start-servers
+
+/server-group=Apps-03:add(profile=full,socket-binding-group=full-sockets)
+/server-group=Apps-03/jvm=jvm-apps-03/:add(max-heap-size=1024m, max-permgen-size=256m,heap-size=64m)
+/host=slave01/server-config=Apps03-01:add(auto-start=true,group=Apps-03, socket-binding-port-offset=10)
+/host=slave02/server-config=Apps03-02:add(auto-start=true,group=Apps-03, socket-binding-port-offset=10)
+/host=slave03/server-config=Apps03-03:add(auto-start=true,group=Apps-03, socket-binding-port-offset=10)
+/server-group=Apps-03:start-servers
+
+deploy /opt/repositorio/example.war --disabled
+deploy /opt/repositorio/Calendar.war --disabled
+deploy /opt/repositorio/RichTextEditorPopUp.war --disabled
+deploy /opt/repositorio/balancing-test.war --disabled
+deploy /opt/repositorio/jboss-helloworld.war --disabled
+
+deploy --name=balancing-test.war --server-groups=Apps-01
+
+# /host=slave04/server-config=Apps01-04:stop()
+# /host=slave04/server-config=Apps01-04:remove()
+
