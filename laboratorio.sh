@@ -6,7 +6,7 @@
 
 case "$1" in
   'construir')
-    cd host
+    cd jboss
     docker build . -t www.planetaguru.com.ar/jboss-eap-7.2.0-credi
     cd ..
     cd apache
