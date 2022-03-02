@@ -1,7 +1,5 @@
 FROM centos
 
-MAINTAINER "Fabricio Rossi" "frossi@bancocredicoop.coop"
-
 RUN yum -y update && \
 yum -y install telnet unzip tar gzip net-tools mc openssh-server openssh-clients vim && \
 yum clean all
