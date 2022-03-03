@@ -1,0 +1,12 @@
+version: "3.6"
+services:
+
+  haproxy:
+    ports:
+      - 180:80
+      - 11975:1975
+
+  firefox:
+    ports:
+      - 13300:3000
+

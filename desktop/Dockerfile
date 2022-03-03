@@ -1,5 +1,7 @@
 from ubuntu:20.04
 
+RUN if [ "$CACHE_APT" != "" ]; then sed -i "s/archive.ubuntu.com\|ar.archive.ubuntu.com\|archive.canonical.com\|security.ubuntu.com/$CACHE_APT/g" /etc/apt/sources.list; else echo "sin variable CACHE_APT"; fi
+
 ENV TZ=America/Buenos_Aires \
 LANG=es_AR.utf8 \
 LANGUAGE=es_AR:es \

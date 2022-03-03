@@ -7,6 +7,18 @@ HOSTNAME=`hostname`
 
 # ./jboss-cli.sh --connect --controller=master --user=admin --password=admin@2020 --command=':read-attribute(name=product-version)'
 
+if [ -f "/mnt/share/domain.xml" ]; then
+  cp /mnt/share/domain.xml /opt/jboss/domain/configuration/ 
+fi 
+
+if [ -f "/mnt/share/host-master.xml" ]; then
+  cp /mnt/share/host-master.xml /opt/jboss/domain/configuration/ 
+fi 
+
+if [ -f "/mnt/share/host-slave.xml" ]; then
+  cp /mnt/share/host-slave.xml /opt/jboss/domain/configuration/ 
+fi 
+
 if [ $1 = "master" ]; then
 	cd $JBOSS_HOME/bin && ./domain.sh --host-config=host-master.xml -Djboss.domain.base.dir=/opt/jboss/domain/ -Djboss.bind.address.management=$IP -Djboss.hostname=$HOSTNAME;
 elif [ $1 = "slave" ]; then

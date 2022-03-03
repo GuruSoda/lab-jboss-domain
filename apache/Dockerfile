@@ -22,7 +22,9 @@ sed -i '/es_AR.UTF-8/s/^# //g' /etc/locale.gen && locale-gen ; \
 ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
 dpkg-reconfigure --frontend noninteractive tzdata
 
-RUN (curl -skL http://downloads.jboss.org/mod_cluster/1.3.1.Final/linux-x86_64/mod_cluster-1.3.1.Final-linux2-x64-so.tar.gz | tar xfz -) && \
+COPY mod_cluster-1.3.1.Final-linux2-x64-so.tar.gz /tmp/
+
+RUN (cat /tmp/mod_cluster-1.3.1.Final-linux2-x64-so.tar.gz | tar xfz -) && \
     mv *.so /usr/lib/apache2/modules/ && \
     ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/ && \
     ln -s /etc/apache2/mods-available/proxy_ajp.load /etc/apache2/mods-enabled/ && \

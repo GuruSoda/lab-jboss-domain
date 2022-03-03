@@ -1,9 +1,9 @@
-FROM centos
-
-MAINTAINER "Fabricio Rossi" "frossi@bancocredicoop.coop"
+#FROM centos
+FROM quay.io/centos/centos:stream8
+#FROM quay.io/centos/centos:8
 
 RUN yum -y update && \
-yum -y install telnet unzip tar gzip net-tools mc openssh-server openssh-clients vim && \
+yum -y install hostname telnet unzip tar gzip net-tools mc openssh-server openssh-clients vim && \
 yum clean all
 
 RUN echo 'root:jboss' | chpasswd ; useradd -m jboss ; echo jboss: | chpasswd ; usermod -a -G wheel jboss
@@ -31,14 +31,15 @@ ENV PATH $PATH:/opt/jdk/bin
 
 # create JBoss console user
 RUN $JBOSS_HOME/bin/add-user.sh admin admin@2020 --silent
-# configure JBoss
-# RUN echo "JAVA_OPTS=\"\$JAVA_OPTS -Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=0.0.0.0\"" >> $JBOSS_HOME/bin/standalone.conf
-COPY --chown=jboss:jboss domain.xml host-master.xml host-slave.xml /opt/jboss/domain/configuration/
+
+### DESCOMENTAR para un jboss modo dominio funcionando
+# COPY --chown=jboss:jboss domain.xml host-master.xml host-slave.xml /opt/jboss/domain/configuration/
 
 # start JBoss
 # ENTRYPOINT $JBOSS_HOME/bin/standalone.sh -c standalone-full-ha.xml
 # ENTRYPOINT cd $JBOSS_HOME/bin && ./domain.sh --host-config=host-master.xml -Djboss.domain.base.dir=/opt/jboss/domain/
 # CMD cd $JBOSS_HOME/bin && ./domain.sh --host-config=host-slave.xml -Djboss.domain.base.dir=/opt/jboss/domain/ --backup
+
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 

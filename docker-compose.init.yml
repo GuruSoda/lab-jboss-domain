@@ -1,0 +1,17 @@
+version: "3.5"
+services:
+
+ init:
+    image: jboss
+    build: ./jboss
+    command: init
+    scale: 1
+    depends_on:
+      - master
+    networks:
+      - jbossnet
+    volumes:
+      - ./repositorio:/opt/repositorio
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+

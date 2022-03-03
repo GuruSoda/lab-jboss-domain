@@ -3,7 +3,7 @@
 SUDO=/usr/bin/sudo
 SU=/usr/bin/su
 USER=docker
-VNC_PASSWORD_DEFAULT=sodasoda
+VNC_PASSWORD_DEFAULT=docker01
 
 /etc/init.d/dbus start
 
@@ -11,7 +11,7 @@ if [ -z "$VNC_PASSWORD" ]; then
 	VNC_PASSWORD=$VNC_PASSWORD_DEFAULT
 fi
 
-if [ -n "$USERRRRR" ]; then
+if [ -n "$USER" ]; then
     useradd --create-home --shell /bin/bash --user-group --groups adm,sudo $USER
     if [ -z "$PASSWORD" ]; then
         PASSWORD=docker
