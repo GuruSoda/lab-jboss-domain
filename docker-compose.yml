@@ -20,7 +20,7 @@ services:
   apache01:
     image: apache 
     build: ./apache
-    hostname: apache
+    hostname: apache01
     restart: unless-stopped
     volumes:
       - ./apache/cluster.conf:/etc/apache2/conf-available/cluster.conf 
@@ -34,7 +34,7 @@ services:
   apache02:
     image: apache 
     build: ./apache
-    hostname: apache
+    hostname: apache02
     restart: unless-stopped
     volumes:
       - ./apache/cluster.conf:/etc/apache2/conf-available/cluster.conf 
