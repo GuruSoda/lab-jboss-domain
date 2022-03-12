@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.6"
 services:
 
   haproxy:
@@ -13,7 +13,7 @@ services:
       - ./haproxy/haproxy.cfg:/etc/haproxy/haproxy.cfg:ro
       - ./haproxy/custom_404.html:/etc/haproxy/errors/custom_404.html:ro
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=1
     cap_add:
       - NET_ADMIN
 
@@ -29,7 +29,7 @@ services:
     depends_on:
       - fluentd 
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=1
 
   apache02:
     image: apache 
@@ -43,7 +43,7 @@ services:
     depends_on:
       - fluentd 
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=1
 
   master:
     image: jboss
@@ -55,11 +55,12 @@ services:
     volumes:
       - jboss-data:/opt/data
       - ./jboss:/mnt/share
+      - ./repositorio:/opt/repositorio
 #      - ./jboss/domain.xml:/opt/jboss/domain/configuration/domain.xml:rw
 #      - ./jboss/host-master.xml:/opt/jboss/domain/configuration/host-master.xml
 #      - ./jboss/host-slave.xml:/opt/jboss/domain/configuration/host-slave.xml
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=1
 
   backup:
     image: jboss
@@ -76,7 +77,7 @@ services:
 #      - ./jboss/host-master.xml:/opt/jboss/domain/configuration/host-master.xml
 #      - ./jboss/host-slave.xml:/opt/jboss/domain/configuration/host-slave.xml
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=1
 
   slave01:
     image: jboss
@@ -95,7 +96,7 @@ services:
 #      - ./jboss/host-master.xml:/opt/jboss/domain/configuration/host-master.xml
 #      - ./jboss/host-slave.xml:/opt/jboss/domain/configuration/host-slave.xml:rw
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=1
 
   slave02:
     image: jboss
@@ -114,7 +115,7 @@ services:
 #      - ./jboss/host-master.xml:/opt/jboss/domain/configuration/host-master.xml
 #      - ./jboss/host-slave.xml:/opt/jboss/domain/configuration/host-slave.xml:rw
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=1
 
   slave03:
     image: jboss
@@ -133,7 +134,7 @@ services:
 #      - ./jboss/host-master.xml:/opt/jboss/domain/configuration/host-master.xml
 #      - ./jboss/host-slave.xml:/opt/jboss/domain/configuration/host-slave.xml:rw
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=1
 
   fluentd:
     image:  fluent/fluentd
@@ -158,8 +159,9 @@ services:
 #      - /path/to/config:/config
     networks:
       - jbossnet
+    scale: 0
     links:
-      - "haproxy:ncdtesting"
+      - "haproxy:jbosslab"
     shm_size: "1gb"
     restart: unless-stopped
 
@@ -177,6 +179,7 @@ services:
 
 networks:
   jbossnet:
+    ipv6: false
   haproxynet:
     driver: bridge
 
