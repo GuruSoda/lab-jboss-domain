@@ -2,54 +2,64 @@ version: "3.6"
 services:
 
   haproxy:
-    image: haproxytech/haproxy-ubuntu:2.2
-#    image: haproxy:2.2
-#    build: ./haproxy
+    build: ./haproxy
     hostname: haproxy
     restart: unless-stopped
-    networks:
-      - jbossnet
     volumes:
       - ./haproxy/haproxy.cfg:/etc/haproxy/haproxy.cfg:ro
       - ./haproxy/custom_404.html:/etc/haproxy/errors/custom_404.html:ro
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=1
     cap_add:
       - NET_ADMIN
-
+    networks:
+      - contingencia 
+ 
   apache01:
-    image: apache 
+    image: apache
     build: ./apache
     hostname: apache01
     restart: unless-stopped
     volumes:
-      - ./apache/cluster.conf:/etc/apache2/conf-available/cluster.conf 
-      - ./apache/site.conf:/etc/apache2/sites-enabled/site.conf
-    networks:
-      - jbossnet
+      - ./apache/cluster.conf:/etc/apache2/conf-available/cluster.conf:ro
+      - ./apache/site.conf:/etc/apache2/sites-enabled/site.conf:ro
+      - ./apache/apache2.conf:/etc/apache2/apache2.conf:ro
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
-
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - contingencia 
+ 
   apache02:
-    image: apache 
+    image: apache
     build: ./apache
     hostname: apache02
     restart: unless-stopped
     volumes:
-      - ./apache/cluster.conf:/etc/apache2/conf-available/cluster.conf 
-      - ./apache/site.conf:/etc/apache2/sites-enabled/site.conf
-    networks:
-      - jbossnet
+      - ./apache/cluster.conf:/etc/apache2/conf-available/cluster.conf:ro
+      - ./apache/site.conf:/etc/apache2/sites-enabled/site.conf:ro
+      - ./apache/apache2.conf:/etc/apache2/apache2.conf:ro
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
-
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - contingencia 
+ 
+  memcached:
+    image: memcached:1.6-alpine
+    command: -m 256m
+    hostname: memcached
+    restart: unless-stopped
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+    networks:
+      - contingencia 
+ 
   master:
     image: jboss
     build: ./jboss
     command: master
     hostname: master
-    networks:
-      - jbossnet
     volumes:
       - ./jboss/fluent.conf:/etc/fluent/fluent.conf
       - jboss-data:/opt/data
@@ -57,21 +67,9 @@ services:
       - ./repositorio:/opt/repositorio
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
-
-  backup:
-    image: jboss
-    build: ./jboss
-    command: master
-    hostname: backup
     networks:
-      - jbossnet
-    scale: 0 
-    volumes:
-      - jboss-data:/opt/data
-      - ./jboss:/mnt/share
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=1
-
+      - contingencia 
+ 
   slave01:
     image: jboss
     build: ./jboss
@@ -81,7 +79,7 @@ services:
     depends_on:
       - master
     networks:
-      - jbossnet
+      - contingencia 
     volumes:
       - ./jboss/fluent.conf:/etc/fluent/fluent.conf
       - jboss-data:/opt/data
@@ -98,7 +96,7 @@ services:
     depends_on:
       - master
     networks:
-      - jbossnet
+      - contingencia 
     volumes:
       - ./jboss/fluent.conf:/etc/fluent/fluent.conf
       - jboss-data:/opt/data
@@ -115,7 +113,7 @@ services:
     depends_on:
       - master
     networks:
-      - jbossnet
+      - contingencia 
     volumes:
       - ./jboss/fluent.conf:/etc/fluent/fluent.conf
       - jboss-data:/opt/data
@@ -131,29 +129,15 @@ services:
       - PGID=1000
       - TZ=America/Argentina/Buenos_Aires
     networks:
-      - jbossnet
+      - contingencia 
     scale: 0
     links:
-      - "haproxy:jbosslab"
+      - "haproxy:domainmodelab"
     shm_size: "1gb"
     restart: unless-stopped
 
-#  desktop:
-#    image: desktop
-#    build: ./desktop
-#    hostname: desktop
-#    scale: 0
-#    networks:
-#      - jbossnet
-#    volumes:
-#      - /home/ubuntu/jboss-domain/repositorio:/opt/repositorio
-#    sysctls:
-#      - net.ipv6.conf.all.disable_ipv6=0
-
 networks:
-  jbossnet:
-  haproxynet:
-    driver: bridge
+  contingencia:
 
 volumes:
   jboss-data:
